@@ -106,8 +106,8 @@ const sendMail = (email, uniqueString) => {
 
     service: 'gmail',
 auth: {
-user: 'malulekemsg@gmail.com',
-pass: 'Vuakoma*01',
+user: 'nonreply18@gmail.com',
+pass: 'Ilovemymom*77',
 }
 });
 var mailOptions;
@@ -152,13 +152,14 @@ app.post("/Login.html", function(req, res) {
   default: 'Pending'
 };
 
- let user =  User.findOne({ email: req.body.email });
+ let user =  User.findOne({ email: email,status: 'Active' }, function(err, user){
+    if(user){
 
- User.findOne({email:email}, function(err, foundUser) {
+ User.findOne({email:email,status: 'Active'}, function(err, foundUser) {
 
  if (foundUser.status != "Active" && foundUser.email === email && foundUser.password === password) {
 
-      res.sendFile(__dirname + "/failureLogin.html");
+      res.sendFile(__dirname + "/notVerified.html");
 
  }
  else {
@@ -178,6 +179,14 @@ app.post("/Login.html", function(req, res) {
 
  }
 
+
+});
+}else{
+  if(!user)
+{
+  res.sendFile(__dirname + "/failureLogin.html");
+}
+}
 
 });
 
