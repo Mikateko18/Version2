@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema ({
           type: mongoose.Schema.Types.ObjectId,
           ref: "Role"
         }
-      ]
+      ],
+      
 
 });
 const secret = "Thisisourlittlesecret.";
@@ -49,6 +50,9 @@ app.get("/", function(req, res) {
   res.sendFile(__dirname + "/Login.html");
 })
 app.get("/Login.html", function(req, res) {
+  res.sendFile(__dirname + "/Login.html");
+})
+app.get("/failureVerify.html", function(req, res) {
   res.sendFile(__dirname + "/Login.html");
 })
 
@@ -87,7 +91,7 @@ app.post("/forgot-password.html", (req, res, next) => {
     email: userSchema.email,
 
   };
-  const token = jwt.sign(payload, secret, {expiresIn: '15m'});
+  const token = jwt.sign(payload, secret);
   const sendMail2 = (email) => {
     var transport = nodemailer.createTransport({
   
@@ -189,7 +193,7 @@ User.findOne({ email: req.body.email,status: 'Active' },function(err,user) {
         });
        
         newUser.save();
-        sendMail(email,newUser.confirmationCode);
+        sendMail(email,newUser.confirmationCode, newUser.FirstName);
     
         res.sendFile(__dirname + "/emailsuccess.html");
 }
@@ -197,7 +201,7 @@ User.findOne({ email: req.body.email,status: 'Active' },function(err,user) {
 });
 
 
-const sendMail = (email, confirmationCode) => {
+const sendMail = (email, confirmationCode,FirstName) => {
  
   var transport = nodemailer.createTransport({
 
@@ -213,8 +217,8 @@ mailOptions = {
  to: email,
  subject: "Please confirm your account",
     html: `<h1>Email Confirmation</h1>
-        <h2> Hello </h2>
-        <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+        <p> Hello ${FirstName} </p>
+        <p>Thank you for subscribing to DAPS. Please confirm your email by clicking on the following link</p>
         <a href=http://localhost:3000/verify/${confirmationCode}> Click here</a>
         </div>`,
  
@@ -239,7 +243,7 @@ User.findOne({
 
   .then((user) => {
     if (!user) {
-      res.sendFile(__dirname + "/failureLogin.html");
+      res.sendFile(__dirname + "/failureVerify.html");
     }
 
     user.status = "Active";
