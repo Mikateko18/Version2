@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema ({
   LastName:String,
   email:String,
   password:String,
+  
   status: {
       type: String,
       enum: ['Pending', 'Active'],
@@ -79,11 +80,8 @@ app.post("/forgot-password.html", (req, res, next) => {
       res.sendFile(__dirname + "/failureLogin.html");
     }else{
     
-
-   
-    const link = `http://localhost:3000/reset-password.html/${user.email}/${token}`
-    sendMail2(email);
-    res.sendFile(__dirname + "/emailsuccess.html");
+    sendMail2(email, user._id);
+    res.sendFile(__dirname + "/emailsuccessPassword.html");
   }
 });
   });
@@ -92,7 +90,7 @@ app.post("/forgot-password.html", (req, res, next) => {
 
   };
   const token = jwt.sign(payload, secret);
-  const sendMail2 = (email) => {
+  const sendMail2 = (email, _id) => {
     var transport = nodemailer.createTransport({
   
       service: 'gmail',
@@ -106,9 +104,15 @@ app.post("/forgot-password.html", (req, res, next) => {
    from:"Mikateko",
    to: email,
    subject: 'Reset password',
-    html:`Press <a href=http://localhost:3000/reset-password.html/${token}>here </a> to reset your password. 
+    html:
     
-    The link will expire within 15 minutes`
+    `<p>Hello</p>
+    
+    <P>You are receiving this because you (or someone else) have requested the reset of the password for your account.
+    Please click on the following link, or paste this into your browser to complete the process: 
+    <a href=http://localhost:3000/reset-password.html/${_id}/${token}>here </a> </p> . 
+    <p> If you did not request this, please ignore this email and your password will remain unchanged.</p>
+    `
   
   };
   
@@ -123,7 +127,7 @@ app.post("/forgot-password.html", (req, res, next) => {
   }
   
 
-app.get("/reset-password.html/:token", (req, res, next) => {
+app.get("/reset-password.html/:_id/:token", (req, res, next) => {
   const {token} = req.params;
   try {
     const payload = jwt.verify(token, secret);
@@ -134,23 +138,24 @@ app.get("/reset-password.html/:token", (req, res, next) => {
   
   
 })
-app.post("/reset-password.html/:token", (req, res, next) => {
+app.post("/reset-password.html/:_id/:token", (req, res, next) => {
   const {token} = req.params;
-  const {password, confirmPassword} = req.body;
+  const {newPassword} = req.body.newPassword;
   try {
     const payload = jwt.verify(token, secret);
     
   } catch (error) {
     console.log(error);
   }
-  User.updateOne({ password: req.body.password },function(err,user) {
+  User.findOne({_id: req.params._id },function(err,user) {
 
-    if (user) {
-         user.password = password;
-        res.sendFile(__dirname + "/successfulRegistration.html");
-
-
+    if (!user) {
+         
+        res.sendFile(__dirname + "/failureRegistration.html");
     }
+    user.password = req.body.newPassword;
+    user.save();
+    res.sendFile(__dirname + "/successfulReset.html");
   
 });
 });
@@ -264,6 +269,7 @@ User.findOne({
 app.post("/Login.html", function(req, res) {
  const email = req.body.email;
  const password = req.body.password;
+ const newPassword = req.body.password;
  const status =  {
   type: String,
   enum: ['Pending', 'Active'],
