@@ -53,6 +53,9 @@ app.get("/", function(req, res) {
 app.get("/Login.html", function(req, res) {
   res.sendFile(__dirname + "/Login.html");
 })
+app.get("/AR.html", function(req, res) {
+  res.sendFile(__dirname + "/AR.html");
+})
 app.get("/failureVerify.html", function(req, res) {
   res.sendFile(__dirname + "/Login.html");
 })
@@ -317,6 +320,9 @@ app.post("/Login.html", function(req, res) {
 });
 
 app.post("/success.html", function(req, res) {
+  res.sendFile(__dirname + "/Login.html");
+});
+app.post("/AR.html", function(req, res) {
   res.sendFile(__dirname + "/Login.html");
 });
 let port = process.env.PORT;
