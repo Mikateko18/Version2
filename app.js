@@ -113,7 +113,7 @@ app.post("/forgot-password.html", (req, res, next) => {
     
     <P>You are receiving this because you (or someone else) have requested the reset of the password for your account.
     Please click on the following link, or paste this into your browser to complete the process: 
-    <a href=http://localhost:3000/reset-password.html/${_id}/${token}>here </a> </p> . 
+    <a href=http://dapsvizportal.site/reset-password.html/${_id}/${token}>here </a> </p> . 
     <p> If you did not request this, please ignore this email and your password will remain unchanged.</p>
     `
   
@@ -227,7 +227,7 @@ mailOptions = {
     html: `<h1>Email Confirmation</h1>
         <p> Hello ${FirstName} </p>
         <p>Thank you for subscribing to DAPS. Please confirm your email by clicking on the following link</p>
-        <a href=http://localhost:3000/verify/${confirmationCode}> Click here</a>
+        <a href=http://dapsvizportal.site/verify/${confirmationCode}> Click here</a>
         </div>`,
  
 
